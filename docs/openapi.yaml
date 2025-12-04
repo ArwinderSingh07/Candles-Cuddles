@@ -1,0 +1,264 @@
+openapi: 3.0.3
+info:
+  title: Candles & Cuddles API
+  version: 1.0.0
+  description: |
+    REST API powering the Candles & Cuddles storefront. Razorpay orders are created server-side
+    and signatures are verified on both checkout confirmation and webhook reconciliation.
+servers:
+  - url: https://api.candlesandcuddles.com/api/v1
+paths:
+  /health:
+    get:
+      summary: Liveness check
+      responses:
+        '200':
+          description: Service is running.
+  /ready:
+    get:
+      summary: Readiness check
+      responses:
+        '200':
+          description: DB is connected
+        '503':
+          description: DB is not connected
+  /products:
+    get:
+      summary: List active products
+      responses:
+        '200':
+          description: Array of products
+  /products/{id}:
+    get:
+      summary: Get product by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product
+        '404':
+          description: Not found
+  /orders/create:
+    post:
+      summary: Create a Razorpay order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+      responses:
+        '201':
+          description: Razorpay order payload
+  /orders/verify:
+    post:
+      summary: Verify Razorpay signature after checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOrder'
+      responses:
+        '200':
+          description: Order verified
+  /webhook/razorpay:
+    post:
+      summary: Handle Razorpay webhooks
+      responses:
+        '200':
+          description: Webhook accepted
+        '400':
+          description: Invalid signature
+  /uploads/presign:
+    post:
+      summary: Generate S3 presigned upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentType:
+                  type: string
+      responses:
+        '200':
+          description: Presigned URL
+  /admin/login:
+    post:
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+      responses:
+        '200':
+          description: JWT token
+  /admin/users:
+    post:
+      summary: Create admin user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+      responses:
+        '201':
+          description: Created
+  /admin/products:
+    post:
+      summary: Create product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Created
+  /admin/products/{id}:
+    patch:
+      summary: Update product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Updated product
+    delete:
+      summary: Delete product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /admin/orders:
+    get:
+      summary: List orders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Orders array
+  /admin/orders/{id}/status:
+    patch:
+      summary: Update order status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, paid, captured, failed]
+      responses:
+        '200':
+          description: Updated order
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Product:
+      type: object
+      required: [title, slug, description, price]
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+        currency:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        stock:
+          type: integer
+        active:
+          type: boolean
+    CreateOrder:
+      type: object
+      required: [user, items]
+      properties:
+        user:
+          type: object
+          properties:
+            name: { type: string }
+            email: { type: string }
+            phone: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId: { type: string }
+              qty: { type: integer }
+    VerifyOrder:
+      type: object
+      required: [orderId, razorpayOrderId, razorpayPaymentId, razorpaySignature]
+      properties:
+        orderId: { type: string }
+        razorpayOrderId: { type: string }
+        razorpayPaymentId: { type: string }
+        razorpaySignature: { type: string }
+    AdminLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+    AdminCreate:
+      allOf:
+        - $ref: '#/components/schemas/AdminLogin'
+        - type: object
+          properties:
+            role:
+              type: string
+              enum: [admin, staff]
+
