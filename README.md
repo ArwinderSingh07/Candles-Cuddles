@@ -1,3 +1,5 @@
+# Candles-Cuddles
+Candles and Cuddles
 # Candles & Cuddles
 
 Production-ready eCommerce stack for the Candles & Cuddles brand. The repo includes a React/Tailwind storefront, a hardened Express API (Razorpay-ready), infrastructure artifacts, CI/CD, and an OpenAPI contract.
