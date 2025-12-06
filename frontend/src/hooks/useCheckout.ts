@@ -21,8 +21,10 @@ export const useCheckout = () => {
       setStatus('loading');
       setError(null);
       try {
+        const customerId = localStorage.getItem('cuddles_customer_id') || undefined;
         const order = await createOrder({
           user: customer,
+          customerId,
           items: items.map((item) => ({ productId: item.product._id, qty: item.qty })),
         });
 

@@ -15,7 +15,7 @@ export const errorHandler = (err: AppError, req: Request, res: Response, _next: 
   };
 
   if (err instanceof ZodError) {
-    payload.errors = err.issues;
+    payload.errors = err.errors;
   } else if (err.details) {
     payload.details = err.details;
   }

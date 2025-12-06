@@ -8,7 +8,7 @@ const schema = z.object({
 
 export const getPresignedUploadUrl = async (req: Request, res: Response) => {
   const parsed = schema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ errors: parsed.error.issues });
+  if (!parsed.success) return res.status(400).json({ errors: parsed.error.errors });
 
   const result = await getPresignedUpload(parsed.data.contentType);
   res.json(result);

@@ -11,7 +11,7 @@ const productBodySchema = z.object({
   images: z.array(z.string()).default([]),
   stock: z.number().int().nonnegative().default(0),
   active: z.boolean().default(true),
-  metadata: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const listProducts = async (_req: Request, res: Response) => {

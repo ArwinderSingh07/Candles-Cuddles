@@ -18,7 +18,7 @@ const createAdminSchema = z.object({
 
 export const adminLogin = async (req: Request, res: Response) => {
   const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ errors: parsed.error.issues });
+  if (!parsed.success) return res.status(400).json({ errors: parsed.error.errors });
 
   const user = await AdminUserModel.findOne({ email: parsed.data.email });
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
@@ -32,7 +32,7 @@ export const adminLogin = async (req: Request, res: Response) => {
 
 export const createAdminUser = async (req: Request, res: Response) => {
   const parsed = createAdminSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ errors: parsed.error.issues });
+  if (!parsed.success) return res.status(400).json({ errors: parsed.error.errors });
 
   const existing = await AdminUserModel.findOne({ email: parsed.data.email });
   if (existing) return res.status(409).json({ message: 'Admin already exists' });

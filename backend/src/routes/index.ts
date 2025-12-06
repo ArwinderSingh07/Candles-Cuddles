@@ -13,6 +13,14 @@ import { handleRazorpayWebhook } from '../controllers/webhook.controller';
 import { adminLogin, createAdminUser } from '../controllers/admin.controller';
 import { authenticate, requireRole } from '../middlewares/auth';
 import { metricsRegistry } from '../config/metrics';
+import {
+  createOrUpdateCustomer,
+  getCustomer,
+  updateCustomer,
+  updateCustomerAddresses,
+  updateCustomerPaymentMethods,
+  getCustomerOrders,
+} from '../controllers/customer.controller';
 
 const router = Router();
 const adminRouter = Router();
@@ -31,6 +39,13 @@ router.post('/orders/create', createOrder);
 router.post('/orders/verify', verifyOrder);
 
 router.post('/uploads/presign', getPresignedUploadUrl);
+
+router.post('/customers', createOrUpdateCustomer);
+router.get('/customers/:id', getCustomer);
+router.patch('/customers/:id', updateCustomer);
+router.put('/customers/:id/addresses', updateCustomerAddresses);
+router.put('/customers/:id/payment-methods', updateCustomerPaymentMethods);
+router.get('/customers/:id/orders', getCustomerOrders);
 
 router.post('/webhook/razorpay', handleRazorpayWebhook);
 

@@ -12,7 +12,7 @@ export const createRazorpayOrder = async (params: { amount: number; currency: st
     amount: params.amount,
     currency: params.currency,
     receipt: params.receipt,
-    payment_capture: true,
+    payment_capture: 1,
   });
 };
 

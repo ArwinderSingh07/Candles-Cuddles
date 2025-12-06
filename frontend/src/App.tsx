@@ -8,6 +8,13 @@ import { ContactPage } from './pages/ContactPage';
 import { FAQPage } from './pages/FAQPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { SpotlightWinterPage } from './pages/SpotlightWinter';
+import { SpotlightCustomPage } from './pages/SpotlightCustom';
+import { SpotlightGiftsPage } from './pages/SpotlightGifts';
+import { ProfilePage } from './pages/ProfilePage';
+import { ProfileAddressesPage } from './pages/ProfileAddressesPage';
+import { ProfilePaymentsPage } from './pages/ProfilePaymentsPage';
+import { ProfileOrdersPage } from './pages/ProfileOrdersPage';
 import './index.css';
 
 function App() {
@@ -21,6 +28,13 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/addresses" element={<ProfileAddressesPage />} />
+        <Route path="/profile/payments" element={<ProfilePaymentsPage />} />
+        <Route path="/profile/orders" element={<ProfileOrdersPage />} />
+        <Route path="/spotlight/winter" element={<SpotlightWinterPage />} />
+        <Route path="/spotlight/custom" element={<SpotlightCustomPage />} />
+        <Route path="/spotlight/gifts" element={<SpotlightGiftsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>

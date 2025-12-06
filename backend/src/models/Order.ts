@@ -13,6 +13,7 @@ export interface OrderDocument extends Document {
     email: string;
     phone?: string;
   };
+  customerId?: string;
   items: OrderItem[];
   amount: number;
   currency: string;
@@ -26,6 +27,7 @@ export interface OrderDocument extends Document {
 
 const orderSchema = new Schema<OrderDocument>(
   {
+    customerId: { type: Schema.Types.ObjectId, ref: 'Customer' },
     user: {
       name: { type: String, required: true },
       email: { type: String, required: true },

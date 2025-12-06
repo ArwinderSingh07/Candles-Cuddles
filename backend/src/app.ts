@@ -1,5 +1,5 @@
 import 'express-async-errors';
-import express, { Request as ExpressRequest } from 'express';
+import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
@@ -13,24 +13,22 @@ import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
-const sentryDsn = env.SENTRY_DSN;
-const sentryEnabled = Boolean(sentryDsn);
+const sentryEnabled = Boolean(env.SENTRY_DSN);
 
-if (sentryDsn) {
+if (sentryEnabled) {
   Sentry.init({
-    dsn: sentryDsn,
+    dsn: env.SENTRY_DSN,
     environment: env.NODE_ENV,
     tracesSampleRate: isProd ? 0.1 : 1,
-    integrations: [Sentry.expressIntegration()],
   });
+  app.use(Sentry.Handlers.requestHandler());
 }
 
 app.use(
   express.json({
     verify: (req, _res, buf) => {
-      const request = req as ExpressRequest & { rawBody?: string };
-      if (request.originalUrl?.startsWith('/api/v1/webhook/razorpay')) {
-        request.rawBody = buf.toString();
+      if (req.originalUrl.startsWith('/api/v1/webhook/razorpay')) {
+        (req as any).rawBody = buf.toString();
       }
     },
   }),
@@ -51,7 +49,7 @@ app.use(createRateLimiter());
 app.use('/api/v1', routes);
 
 if (sentryEnabled) {
-  Sentry.setupExpressErrorHandler(app);
+  app.use(Sentry.Handlers.errorHandler());
 }
 app.use(errorHandler);
 
